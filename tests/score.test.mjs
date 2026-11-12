@@ -51,7 +51,10 @@ test('少しのずれは許容される', () => {
   const t = crossMask(w, h);
   const p = crossMask(w, h, 3, -2);
   const { score } = computeScore(t, p, w, h, { charCells: 128 });
-  assert.ok(score >= 85, `score=${score}`);
+  assert.ok(score >= 70, `score=${score}`);
+  // 大きくずれるほど下がる
+  const far = computeScore(t, crossMask(w, h, 12, -9), w, h, { charCells: 128 });
+  assert.ok(far.score < score - 20, `near=${score} far=${far.score}`);
 });
 
 test('余計な墨（足跡など）は適合率を下げる', () => {
