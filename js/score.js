@@ -13,10 +13,10 @@ export const GRID_LONG_SIDE = 128;
 
 // 許容誤差（charCells=60 のときのセル数）と採点カーブ。
 export const SCORE_PARAMS = {
-  rNear: 1, rFar: 3.5,   // 再現率: お手本から墨までの距離
-  pNear: 0.5, pFar: 3,   // 適合率: 墨からお手本までの距離
-  areaCap: 2.2, areaExp: 0.6, // 墨の面積がお手本の areaCap 倍を超えると減点
-  exp: 0.8,
+  rNear: 0.6, rFar: 2.5,  // 再現率: お手本から墨までの距離
+  pNear: 0.4, pFar: 2.2,  // 適合率: 墨からお手本までの距離
+  areaCap: 1.8, areaExp: 0.8, // 墨の面積がお手本の areaCap 倍を超えると減点
+  exp: 1.0,
 };
 
 /** aspect = 紙の 幅 / 高さ */
