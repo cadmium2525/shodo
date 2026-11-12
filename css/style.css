@@ -417,3 +417,31 @@ body.touch .btn-brush { display: block; }
   .odai-grid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
   .odai-btn { font-size: 20px; }
 }
+
+/* ---------- 背の低い画面（スマホ横持ちなど） ---------- */
+@media (max-height: 520px) {
+  #scr-title { padding: 8px; }
+  .title-box { gap: 6px; max-width: 720px; }
+  .logo { flex-direction: row; gap: 14px; align-items: center; }
+  .logo-sub { font-size: clamp(30px, 13vh, 56px); border-width: 2px; }
+  .logo-main { margin-top: 0; font-size: clamp(20px, 9vh, 38px); }
+  .howto { font-size: 13px; line-height: 1.45; padding: 6px 12px 6px 30px; }
+  .challenge { font-size: 14px; padding: 3px 10px; }
+  #btn-start { font-size: 20px; padding: 7px 36px; }
+}
+
+/* ---------- 横長の画面では講評パネルを右に並べる ---------- */
+@media (min-aspect-ratio: 8/5) {
+  .result-panel {
+    left: auto;
+    right: max(10px, env(safe-area-inset-right));
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+    width: min(44%, 460px);
+    max-height: calc(100% - 20px);
+    overflow-y: auto;
+  }
+  .result-panel .res-buttons { grid-template-columns: repeat(2, 1fr); }
+  .result-panel .res-head { flex-wrap: wrap; }
+}

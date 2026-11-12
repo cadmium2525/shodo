@@ -47,14 +47,14 @@ export const config = {
 
   // ---- 筆と墨 ----
   TIP_OFFSET: 0.95,        // 体の中心から筆先まで（進行方向の前方）
-  BRUSH_RADIUS: 0.24,      // 基本の筆の半径
+  BRUSH_RADIUS: 0.15,      // 基本の筆の半径
   BRUSH_SLOW_GAIN: 1.25,   // 止まりかけのときの太さ倍率
   BRUSH_FAST_GAIN: 0.62,   // 最高速のときの太さ倍率
-  INK_PER_UNIT: 4.6,       // 基本太さで 1 単位描くと減る墨（満タン 100）
+  INK_PER_UNIT: 3.6,       // 基本太さで 1 単位描くと減る墨（満タン 100）
   INK_THIN_START: 30,      // これ以下で細くなり始める
   KASURE_START: 42,        // これ以下でかすれ始める
   POOLING_GAIN: 1.25,      // 入りの墨だまりの大きさ
-  NIJIMI_MAX: 1.9,         // 止まってにじんだときの最大倍率
+  NIJIMI_MAX: 1.6,         // 止まってにじんだときの最大倍率
   NIJIMI_RATE: 0.55,       // にじみの成長速度（/秒）
   NIJIMI_INK_PER_SEC: 6,   // にじんでいる間の墨消費
   SPLATTER_CHANCE: 0.05,   // 1 単位描くごとの飛沫確率（速いほど増える）
@@ -69,7 +69,7 @@ export const config = {
   FRESH_STROKE_GRACE: 1.2, // 筆を上げた直後、その一画は踏んでも墨がつかない秒数
 
   // ---- 制限時間（秒） ----
-  TIME_BY_LEVEL: { shodan: 60, nidan: 90, shihan: 150, meigen: 150 },
+  TIME_BY_LEVEL: { shodan: 75, nidan: 120, shihan: 150, meigen: 150 },
   HURRY_TIME: 10,
 };
 

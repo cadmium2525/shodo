@@ -81,8 +81,8 @@ export function makeComment(score, stats, rng = Math.random) {
   if (!stats.inkRatio || stats.inkRatio < 0.002) {
     return { rank, comment: '一滴の墨も落とさぬことで「書とは何か」を問うた。無の境地。' };
   }
-  if (stats.footprints >= 25) extras.push(`足跡${stats.footprints}歩。足で書いたほうが早い。いや、もう足で書いている。`);
-  else if (stats.footprints >= 8) extras.push('紙面を横切る足跡が、制作過程を雄弁に物語る。');
+  if (stats.footprints >= 60) extras.push(`足跡${stats.footprints}歩。足で書いたほうが早い。いや、もう足で書いている。`);
+  else if (stats.footprints >= 20) extras.push('紙面を横切る足跡が、制作過程を雄弁に物語る。');
   if (stats.inkOuts >= 3) extras.push(`墨切れ${stats.inkOuts}回。渇筆の美を、身をもって体得している。`);
   else if (stats.inkOuts >= 1 && stats.refills === 0) extras.push('墨が尽きても筆を止めない。その執念に脱帽。');
   if (stats.offPaper > 3) extras.push('紙に収まりきらぬ器の大きさ。床にも作品が続いている。');
@@ -496,19 +496,20 @@ export class ResultScene {
     }
   }
 
-  fit(W, H, insetTop, insetBottom) {
-    const portrait = W / Math.max(1, H - insetBottom - insetTop) < 1.1;
+  fit(W, H, insetTop, insetBottom, insetRight = 0) {
+    const Wavail = Math.max(120, W - insetRight);
+    const portrait = Wavail / Math.max(1, H - insetBottom - insetTop) < 1.1;
     const wNeed = portrait ? this.mountW + 2.9 : this.byobuWidth + 0.6;
     const hNeed = this.byobuHeight + 1.2; // 手前の床（寝転がった本人）も入れる
     const Havail = Math.max(120, H - insetTop - insetBottom);
     const cam = this.camera;
-    cam.aspect = W / Havail;
+    cam.aspect = Wavail / Havail;
     const tan = Math.tan((cam.fov * Math.PI) / 360);
     const dist = Math.max(hNeed / 2 / tan, wNeed / 2 / (tan * cam.aspect)) + 0.6;
     const cy = this.byobuHeight / 2 - 0.35;
     cam.position.set(0, cy + dist * 0.16, dist);
     cam.lookAt(0, cy, -0.4);
-    cam.setViewOffset(W, Havail, 0, -insetTop, W, H);
+    cam.setViewOffset(Wavail, Havail, 0, -insetTop, W, H);
     cam.updateProjectionMatrix();
   }
 }

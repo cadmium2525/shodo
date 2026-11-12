@@ -137,7 +137,7 @@ async function startRound(text, opts = {}) {
   const grid = gridSize(layout.aspect);
   const targetMask = maskFromCanvas(renderMaskCanvas(layout, C.MASK_CANVAS_LONG), grid.w, grid.h);
   player.rng = rng;
-  player.reset(0, PH / 2 + C.SUZURI_GAP * 0.5);
+  player.reset(0, PH / 2 - 1.0);
   player.makeHiccupSprite();
   const timeLimit = C.TIME_BY_LEVEL[level] ?? 90;
   app.level = level;
@@ -342,6 +342,7 @@ function goResult() {
   $('res-comment').classList.remove('show');
   $('result-panel').classList.remove('show');
   $('res-buttons').classList.add('locked');
+  for (const b of $('res-buttons').querySelectorAll('button')) b.disabled = true;
   $('res-note').hidden = true;
   const scr = screens.result;
   scr.classList.remove('open');
@@ -369,6 +370,7 @@ function updateResult(dt) {
     $('res-rank').classList.add('show');
     $('res-comment').classList.add('show');
     $('res-buttons').classList.remove('locked');
+    for (const b of $('res-buttons').querySelectorAll('button')) b.disabled = false;
   }
 }
 
@@ -435,11 +437,15 @@ function onResize() {
     document.documentElement.style.setProperty('--hud-h', `${Math.round(top)}px`);
     // タッチ端末では下側に筆ボタンとジョイスティックの余地を残す
     const bottom = document.body.classList.contains('touch') ? Math.min(120, H * 0.12) : 12;
-    stage.fit(W, H, top, bottom);
+    // 横長の画面では HUD と操作ボタンは左右の隅にあり、中央の紙とは重ならないので、縦をめいっぱい使う
+    if (W > H * 1.5) stage.fit(W, H, 6, 6);
+    else stage.fit(W, H, top, bottom);
   } else if (app.state === 'result' && resultScene.art) {
     const panel = $('result-panel');
-    const ph = panel.getBoundingClientRect().height + 16;
-    resultScene.fit(W, H, 8, ph);
+    const rect = panel.getBoundingClientRect();
+    // 横長の画面では講評パネルが右側に並ぶ（CSS の .result-panel と同じ条件）
+    if (matchMedia('(min-aspect-ratio: 8/5)').matches) resultScene.fit(W, H, 8, 8, W - rect.left + 8);
+    else resultScene.fit(W, H, 8, rect.height + 16);
   }
 }
 
@@ -568,6 +574,9 @@ function setupHooks() {
       if (!r) return null;
       return { ...r.stats, footprints: r.ink.stats.footprints, splatters: r.ink.stats.splatters, timeLeft: r.timeLeft };
     },
+    getInkDataURL() {
+      return app.round ? app.round.ink.canvas.toDataURL('image/png') : null;
+    },
     getShareImage() {
       const c = getShareCanvas();
       return c ? c.toDataURL('image/png') : null;
@@ -603,6 +612,10 @@ async function boot() {
       ch.textContent = `挑戦状が届いた！ お題「${q}」`;
       $('btn-other').hidden = false;
       $('btn-start').textContent = 'この題に挑む';
+    } else if (q) {
+      const ch = $('challenge');
+      ch.hidden = false;
+      ch.textContent = 'そのお題は見つからなかった… 好きなお題でどうぞ';
     }
   } catch (_) { /* noop */ }
 

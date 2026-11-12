@@ -139,7 +139,7 @@ export function makeShareImage({ inkCanvas, layout, odai, score, rank, url }) {
   fitText(`段位: ${rank}`, 60, S / 2, iy + 160, S - 220);
   // URL
   g.fillStyle = '#c9b48a';
-  fitText(url, 26, S / 2, S - 26, S - 80);
+  fitText(decodeURI(url).replace(/^https?:\/\//, ''), 26, S / 2, S - 26, S - 80);
   return c;
 }
 

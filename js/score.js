@@ -11,6 +11,14 @@
 
 export const GRID_LONG_SIDE = 128;
 
+// 許容誤差（charCells=60 のときのセル数）と採点カーブ。
+export const SCORE_PARAMS = {
+  rNear: 1, rFar: 3.5,   // 再現率: お手本から墨までの距離
+  pNear: 0.5, pFar: 3,   // 適合率: 墨からお手本までの距離
+  areaCap: 2.2, areaExp: 0.6, // 墨の面積がお手本の areaCap 倍を超えると減点
+  exp: 0.8,
+};
+
 /** aspect = 紙の 幅 / 高さ */
 export function gridSize(aspect) {
   if (aspect >= 1) return { w: GRID_LONG_SIDE, h: Math.max(1, Math.round(GRID_LONG_SIDE / aspect)) };
@@ -106,11 +114,11 @@ function closeness(d, near, far) {
 export function computeScore(target, player, w, h, opts = {}) {
   const charCells = opts.charCells ?? 60;
   const k = charCells / 60;
-  // 再現率側はやや寛容（位置ずれを許す）、適合率側はやや厳しめ（はみ出し・足跡を咎める）。
-  const rNear = 2.5 * k;
-  const rFar = 7 * k;
-  const pNear = 2 * k;
-  const pFar = 6 * k;
+  const P = { ...SCORE_PARAMS, ...(opts.params || {}) };
+  const rNear = P.rNear * k;
+  const rFar = P.rFar * k;
+  const pNear = P.pNear * k;
+  const pFar = P.pFar * k;
 
   let targetCount = 0;
   let playerCount = 0;
@@ -133,8 +141,11 @@ export function computeScore(target, player, w, h, opts = {}) {
   }
   const recall = rSum / targetCount;
   const precision = pSum / playerCount;
-  // 積をとって両方そろわないと伸びないようにし、0.7 乗で体感に合わせて持ち上げる。
-  const raw = Math.pow(recall * precision, 0.7);
+  // 塗りつぶし対策: 墨の面積がお手本の areaCap 倍を超えたぶんだけ減点する。
+  const over = playerCount / (targetCount * P.areaCap);
+  const areaPenalty = over > 1 ? Math.pow(1 / over, P.areaExp) : 1;
+  // 積をとって両方そろわないと伸びないようにし、指数で体感に合わせる。
+  const raw = Math.pow(recall * precision, P.exp) * areaPenalty;
   const score = Math.max(0, Math.min(100, Math.round(raw * 100)));
   return { score, recall, precision, inkRatio };
 }
